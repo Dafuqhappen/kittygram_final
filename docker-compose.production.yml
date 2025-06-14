@@ -1,3 +1,5 @@
+version: "3.8"
+
 volumes:
   pg_data_production:
   static_volume:
@@ -9,23 +11,40 @@ services:
     env_file: .env
     volumes:
       - pg_data_production:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
-    image: dafuqhappen/kittygram_backend
+    image: dafuqhappen/kittygram-backend:latest
     env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --no-input && 
+             python manage.py collectstatic --no-input && 
+             gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi:application"
     volumes:
       - static_volume:/app/static_backend
       - media_volume:/app/media
+
   frontend:
-    image: dafuqhappen/kittygram_frontend
+    image: dafuqhappen/kittygram-frontend:latest
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
       - static_volume:/static
+
   gateway:
-    image: dafuqhappen/kittygram_gateway
+    image: dafuqhappen/kittygram-gateway:latest
     env_file: .env
+    depends_on:
+      - backend
     volumes:
       - static_volume:/static
       - media_volume:/media
     ports:
-      - 9000:80
+      - "9000:80"
