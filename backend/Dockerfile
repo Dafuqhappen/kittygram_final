@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM --platform=$BUILDPLATFORM python:3.9
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \

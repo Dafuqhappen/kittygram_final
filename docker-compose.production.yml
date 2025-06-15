@@ -10,7 +10,7 @@ services:
     volumes:
       - pg_data_production:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DB_USER}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,8 +26,8 @@ services:
       sh -c "\
         python manage.py migrate --no-input && \
         python manage.py collectstatic --no-input && \
-        exec gunicorn --bind 0.0.0.0:8000 \
-                     kittygram_backend.wsgi:application\
+        cd /app && exec gunicorn --bind 0.0.0.0:8000 \
+                     kittygram_backend.wsgi:application \
       "
     volumes:
       - static_volume:/app/static_backend
