@@ -23,17 +23,18 @@ services:
         condition: service_healthy
     restart: always
     command: >
-      sh -c "python manage.py migrate --no-input && 
-        python manage.py collectstatic --no-input && 
-        exec gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi:application"
+      sh -c "python manage.py migrate --no-input && \
+          python manage.py collectstatic --no-input && \
+          cp -r /app/collected_static/. /app/static_backend && \
+          exec gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi:application"
     volumes:
-      - static_volume:/app/collected_static
+      - static_volume:/app/static_backend
       - media_volume:/app/media
 
   frontend:
     image: dafuqhappen/kittygram-frontend:latest
     env_file: .env
-    command: cp -r /app/build/. /static/
+    command: cp -r /app/build/. /
     volumes:
       - static_volume:/static
 

@@ -82,6 +82,7 @@ def test_link_connection(
             project_name=taski_project_name
         )
         js_link = _get_js_link(response)
+        print(js_link)
         assert js_link, assert_msg
         try:
             taski_response = requests.get(f'{link}/{js_link}')
@@ -128,7 +129,7 @@ def test_kittygram_static_is_available(
         'JavaScript-файл.'
     )
 
-    assert_msg = 'Убедитесь, что статические файлы для `Kittygram` доступны.'
+    assert_msg = f'Убедитесь, что статические файлы для `Kittygram` доступны. {js_link}'
     js_link_response = requests.get(f'{link}/{js_link}')
     expected_status = HTTPStatus.OK
     assert js_link_response.status_code == expected_status, assert_msg

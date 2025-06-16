@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:18
+FROM node:18
 WORKDIR /app
 
 COPY package.json package.json
