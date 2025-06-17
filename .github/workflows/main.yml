@@ -12,9 +12,9 @@ jobs:
       postgres:
         image: postgres:13.10
         env:
-          POSTGRES_USER: kittygram_user
-          POSTGRES_PASSWORD: kittygram_password
-          POSTGRES_DB: kittygram_db
+          POSTGRES_USER: django_user
+          POSTGRES_PASSWORD: django_password
+          POSTGRES_DB: django_db
         ports:
           - 5432:5432
         options: >-
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: ['3.10', '3.11']
 
       - name: Install dependencies
         run: |
@@ -39,9 +39,9 @@ jobs:
 
       - name: Run Flake8 and Django tests
         env:
-          POSTGRES_USER: kittygram_user
-          POSTGRES_PASSWORD: kittygram_password
-          POSTGRES_DB: kittygram_db
+          POSTGRES_USER: django_user
+          POSTGRES_PASSWORD: django_password
+          POSTGRES_DB: django_db
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
         run: |
@@ -199,4 +199,8 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: "🚀 Деплой Kittygram выполнен успешно!"
+          message: |
+            ✅ *Kittygram CI/CD* успешно завершён!
+            • Автор: `${{ github.actor }}`
+            • Коммит: [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            • Сообщение: `${{ github.event.head_commit.message }}`
